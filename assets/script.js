@@ -1,13 +1,11 @@
 $(document).ready(function () {
 
     const currentDateEl = $("#currentDay");
-
-    let events = {};
-
     const calendar = $("div.container");
-
+    let events = {};
     let lastDateRendered = moment();
 
+    // create and display time blocks on calendar
     function renderCalendar(today, events) {
 
         let hour = moment(today).hour(9);
@@ -20,6 +18,7 @@ $(document).ready(function () {
 
             let hourClass = "";
 
+            //determine whether time block has past, or is in the future
             if (today.isBefore(hour, "hour")) {
                 hourClass = "future";
             } else if (today.isAfter(hour, "hour")) {
@@ -31,10 +30,10 @@ $(document).ready(function () {
             row.append($("<div>").addClass("col-2 hour").text(hour.format("h A")));
 
             let timeBlock = hour.format("hA");
+
             row.append($("<textarea>").addClass(`col-8 ${hourClass}`).text(events[timeBlock]));
 
             row.append($("<button>").addClass("col-2 saveBtn").html("<i class='fas fa-save'></i>").attr("aria-label", "Save").attr("id", hour.format("hA")));
-            console.log(hour.format("hA"));
 
             hour.add(1, "hour");
 
@@ -45,12 +44,14 @@ $(document).ready(function () {
 
     }
 
+    //initialize calendar from todays date
     function initCalendar() {
         const today = moment(); // set today's date
         currentDateEl.text(today.format('LL'));
         renderCalendar(today, events);
     }
 
+    //get stored calendar events from local storage
     function loadCalendar() {
         const storedCalendar = JSON.parse(localStorage.getItem("events"));
         if (storedCalendar) {
@@ -62,16 +63,19 @@ $(document).ready(function () {
     loadCalendar();
     initCalendar();
 
+    //store events
     function saveCalendar() {
         localStorage.setItem("events", JSON.stringify(events));
     }
 
+    //empty events
     function clearCalendar() {
         events = {};
         saveCalendar();
         initCalendar();
     }
 
+    //event handlers
     $("#clear").on("click", clearCalendar);
 
     $(document).on("click", ".saveBtn", function (event) {
